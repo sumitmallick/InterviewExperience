@@ -49,3 +49,4 @@ Steps:
 * created_at:
 * updated_at:
 
+![Alt text here](notification_service.png)
