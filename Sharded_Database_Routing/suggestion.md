@@ -85,41 +85,7 @@ Implement logging using a logging library like logrus (Go), log4j (Java), or log
 Use a monitoring tool like Prometheus or Datadog to collect metrics and set up alerts for critical events like high latency, error rates, or database connection failures.
 Implement distributed tracing using a library like Jaeger or Zipkin, and integrate it with the web framework and database clients.
 
-
-+---------------+       +--------------+       +---------------+
-| Upstream      |       | Microservice |       | Database      |
-| Services      |       |              |       | Shards        |
-|               |       |              |       |               |
-|               |       |              |       |               |
-|               |       |              |       |               |
-+-------+-------+       +-+----------+-+       +-------+-------+
-        |                 |          |                 |
-        |                 |          |                 |
-        |            +----+----------+-------+         |
-        |            |    Load Balancer     |         |
-        |            |                      |         |
-        |            +----------+------------+         |
-        |                       |                      |
-        |                       |                      |
-        +---------------+-------+------+               |
-                        |              |               |
-                        |              |               |
-                  +-----+------+  +-----+------+       |
-                  | Redis      |  | Connection |       |
-                  | Cache      |  | String     |       |
-                  |            |  | Database   |       |
-                  +------------+  +------------+       |
-                                                       |
-                                                +------+-------+
-                                                | Shard Mapping|
-                                                | Database     |
-                                                +-------+------+
-                                                        |
-                                                        |
-                                                +-------+------+
-                                                | Configuration|
-                                                | File         |
-                                                +---------------+
+![Alt text here](sharded_db_routing.png)
 
 In this design diagram, the microservice sits between the upstream services and the database shards. The upstream services send requests with user IDs to the microservice, which is load-balanced across multiple instances.
 
