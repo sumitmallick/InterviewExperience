@@ -1,0 +1,117 @@
+1. Why is Java called the ‘Platform Independent Programming Language’?
+Java is called a ‘Platform Independent Programming Language’ because of its ability to run on any device or operating system. This is achieved through the use of the Java Virtual Machine (JVM), which allows Java bytecode to be executed on any system that has a JVM implementation. Here’s a breakdown of the concept:
+
+Compilation: Java source code is compiled into bytecode by the Java compiler.
+Bytecode: The bytecode is platform-independent and can be executed on any device with a JVM.
+JVM: The JVM interprets or compiles the bytecode into machine code that runs on the specific platform.
+
+Example:
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+
+2. Why is the main method static in Java?
+The main method in Java is static because it needs to be accessible for execution without requiring an instance of the class. This allows the JVM to invoke the main method directly, without creating an object of the class.
+
+Example:
+public class Example {
+    public static void main(String[] args) {
+        System.out.println("This is the main method.");
+    }
+}
+Static: Allows the JVM to call the main method as Example.main(args) without creating an instance of Example.
+
+3. Differences between HashMap and HashTable in Java
+Thread Safety:
+
+HashMap is not synchronized and is not thread-safe.
+Hashtable is synchronized and thread-safe.
+Null Keys and Values:
+
+HashMap allows one null key and multiple null values.
+Hashtable does not allow any null key or value.
+Performance:
+
+HashMap is generally faster because it is unsynchronized.
+Hashtable is slower due to synchronization overhead.
+Example:
+// HashMap Example
+HashMap<String, String> hashMap = new HashMap<>();
+hashMap.put("key1", "value1");
+hashMap.put(null, "value2");
+
+// Hashtable Example
+Hashtable<String, String> hashtable = new Hashtable<>();
+hashtable.put("key1", "value1");
+// hashtable.put(null, "value2"); // This will throw a NullPointerException
+
+4. Why is method overloading not possible by changing the return type in Java?
+Method overloading in Java is not allowed by changing only the return type because it would create ambiguity for the compiler. The method signature must differ in the number or type of parameters to be considered overloaded.
+
+Example:
+// Invalid overloading example
+public class Example {
+    // public int foo() { return 1; }
+    // public double foo() { return 1.0; } // This will cause a compile-time error
+}
+
+5. Difference Between ConcurrentHashMap, HashTable, and Synchronized Map in Java
+ConcurrentHashMap:
+
+Concurrent access with higher concurrency level.
+Only part of the map is locked during updates.
+No null keys or values allowed.
+HashTable:
+
+Synchronized and thread-safe.
+Entire map is locked during updates.
+No null keys or values allowed.
+Synchronized Map:
+
+Wrapper around a Map to make it synchronized.
+Entire map is locked during updates.
+Allows null keys and values.
+Example:
+// ConcurrentHashMap Example
+ConcurrentHashMap<String, String> concurrentHashMap = new ConcurrentHashMap<>();
+concurrentHashMap.put("key1", "value1");
+
+// HashTable Example
+Hashtable<String, String> hashtable = new Hashtable<>();
+hashtable.put("key1", "value1");
+
+// Synchronized Map Example
+Map<String, String> synchronizedMap = Collections.synchronizedMap(new HashMap<>());
+synchronizedMap.put("key1", "value1");
+
+6. Explain JVM, JRE, and JDK
+
+JVM (Java Virtual Machine):
+It is a virtual machine that runs Java bytecode.
+It provides a runtime environment and is platform-dependent.
+Responsible for converting bytecode into machine-specific code.
+
+JRE (Java Runtime Environment):
+It includes the JVM and libraries required to run Java applications.
+It does not include development tools like compilers.
+
+JDK (Java Development Kit):
+It includes JRE and development tools like the Java compiler (javac), debugger, and other tools.
+Required for developing and compiling Java applications.
+Example:
+
+JDK: Used to write and compile the Java program.
+JRE: Provides the libraries, JVM, and other components to run the compiled Java program.
+JVM: Executes the compiled bytecode.
+Example:
+// Example Java Program
+public class Example {
+    public static void main(String[] args) {
+        System.out.println("Hello, JVM!");
+    }
+}
+JDK: Used to compile Example.java to Example.class.
+JRE: Used to run Example.class.
+JVM: Executes the bytecode in Example.class.
