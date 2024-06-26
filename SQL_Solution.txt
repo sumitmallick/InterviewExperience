@@ -1,0 +1,60 @@
+1. Delete duplicate names keeping the first name not deleted
+
+WITH RankedEmployees AS (
+    SELECT 
+        id, 
+        name, 
+        salary,
+        ROW_NUMBER() OVER (PARTITION BY name ORDER BY id) AS rn
+    FROM 
+        Employee
+)
+DELETE FROM Employee
+WHERE id IN (
+    SELECT id 
+    FROM RankedEmployees
+    WHERE rn > 1
+);
+
+2. Find the Nth highest salary from a table
+
+SELECT DISTINCT salary 
+FROM Employee 
+ORDER BY salary DESC 
+LIMIT 1 OFFSET N-1;
+Replace N with the desired rank (e.g., 2 for the second highest).
+
+3. Find all students with marks greater than average
+
+SELECT Student 
+FROM StudentMarks 
+WHERE Marks > (SELECT AVG(Marks) FROM StudentMarks);
+
+4. Department with the highest average salary
+
+SELECT department
+FROM Company
+GROUP BY department
+ORDER BY AVG(salary) DESC
+LIMIT 1;
+
+5. Name and salary of the person with the least salary in each department
+To find the name and salary of the person with the least salary in each department:
+
+WITH RankedSalaries AS (
+    SELECT 
+        id, 
+        name, 
+        department, 
+        salary,
+        ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary) AS rn
+    FROM 
+        Company
+)
+SELECT 
+    name, 
+    salary
+FROM 
+    RankedSalaries
+WHERE 
+    rn = 1;

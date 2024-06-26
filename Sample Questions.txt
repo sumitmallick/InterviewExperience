@@ -1,0 +1,120 @@
+﻿CWF FSE Screening Questions
+What to ask from this Question Bank.
+Coding Question - Question No 1
+● One Coding question is mandatory to solve covering most of the edge cases. The code should be written in Java.
+Concept Question - Question No (2 to 5)
+● For questions 2 to 5 please ask any 2 questions from each section.
+Guidance
+● If the candidate finishes the question early and is doing well, please ask follow-up questions or additional questions to fill the remaining time and gather more information about their skills. 
+
+Q1 - Algorithm/Coding in Java - Ask any 1
+
+
+Question
+
+Given a sorted and rotated array arr[] and a key, write a function to find the key in the array where the array index starts from 0. The expected time complexity is O(Logn). 
+
+Example:  
+Input: arr[] = {5, 6, 7, 8, 9, 10, 1, 2, 3}, key = 3 
+Output: Found at index 8
+
+Input: arr[] = {5, 6, 7, 8, 9, 10, 1, 2, 3}, key = 30 
+Output: Not found
+
+Input: arr[] = {30, 40, 50, 10, 20}, key = 10   
+Output: Found at index 3 
+
+
+
+Question
+
+Given an array of distinct integers and a sum value. Find the count of triplets with a sum smaller than the given sum value. The Expected Time Complexity is O(n2).
+
+Example:  
+Input: arr[] = {-2, 0, 1, 3}
+        sum = 2.
+Output: 2
+Explanation:  Below are triplets with sum less than 2
+               (-2, 0, 1) and (-2, 0, 3) 
+
+Input: arr[] = {5, 1, 3, 4, 7}
+        sum = 12.
+Output: 4
+Explanation:  Below are triplets with a sum less than 12
+               (1, 3, 4), (1, 3, 5), (1, 3, 7), and 
+               (1, 4, 5)
+
+
+
+
+Question
+
+Given the root of a binary tree, the task is to print level order traversal in a way that nodes of all levels are printed in separate lines.
+
+Example:  
+Input:
+
+Output:
+20
+8 22
+4 12
+10 14
+
+Input:
+          1
+       /     \
+      2       3
+    /   \  
+  4     5 
+
+Output:
+1
+2 3
+4 5
+
+
+Question
+
+Given a sorted array arr[] and a number x, write a function that counts the occurrences of x in arr[]. Expected time complexity is O(Logn) 
+
+Example:  
+Input: arr[] = {1, 1, 2, 2, 2, 2, 3,},   x = 2
+Output: 4 // x (or 2) occurs 4 times in arr[]
+
+Input: arr[] = {1, 1, 2, 2, 2, 2, 3,},   x = 3
+Output: 1 
+
+Input: arr[] = {1, 1, 2, 2, 2, 2, 3,},   x = 1
+Output: 2 
+
+Input: arr[] = {1, 1, 2, 2, 2, 2, 3,},   x = 4
+Output: -1 // 4 doesn't occur in arr[]
+
+
+Q2 - Java Concepts - Ask any 2
+● Why is Java called the ‘Platform Independent Programming Language’? 
+● Why is the main method static in java?
+● Differences between HashMap and HashTable in Java.
+● Why is method overloading not possible by changing the return type in java?
+● Difference Between ConcurrentHashMap, HashTable, and Synchronized Map in Java
+● Explain JVM, JRE, and JDK?
+Q3 - Web API Concepts -   Ask any 2
+● What are the HTTP Methods?
+● What is the main difference between POST, PUT and PATCH?
+● What are the key components of an HTTP Request?
+● What are HTTP Status codes?
+● What is REST API & Difference Between REST API and RPC API
+Q4 - SQL Question -   Ask any 2
+● The Table name is Employee with columns - id, name, salary. Delete duplicate names keeping 1st name not deleted.
+● How to find Nth highest salary from a table
+● There is a table which contains two columns Student and Marks, you need to find all the students, whose marks are greater than average marks i.e., list of above average students.
+● SQL to display the Department Name Having Highest Average Salary. The table name is Company and has id, name, department, and salary as columns.
+● SQL to Print the Name and Salary of the Person Having the Least Salary in each Department. The table name is Company and has id, name, department, and salary as columns.
+Q5 - JavaScript concepts (Full Stack Engineers) -   Ask any 2
+● Difference between “ == “ and “ === “ operators in JavaScript.
+● Explain Closures in JavaScript.
+● What are callbacks in JavaScript?
+● What is the use of promises in JavaScript?
+● Explain call(), apply() and bind() methods.
+
+
