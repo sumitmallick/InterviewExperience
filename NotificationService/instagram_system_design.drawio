@@ -1,0 +1,38 @@
+<mxfile host="65bd71144e">
+    <diagram name="Page-1" id="67y3PfjOLrmvyzssFZTZ">
+        <mxGraphModel dx="1205" dy="572" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="xr9rl4qH2HTIytGbBXw1-2" value="Users" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+                    <mxGeometry x="180" y="430" width="40" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="xr9rl4qH2HTIytGbBXw1-4" value="Setup profile" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="350" y="410" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="xr9rl4qH2HTIytGbBXw1-6" value="" style="endArrow=classic;html=1;rounded=0;entryX=-0.017;entryY=0.6;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="xr9rl4qH2HTIytGbBXw1-2" target="xr9rl4qH2HTIytGbBXw1-4" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="390" y="480" as="sourcePoint"/>
+                        <mxPoint x="440" y="430" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="xr9rl4qH2HTIytGbBXw1-7" value="Login" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="350" y="40" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="xr9rl4qH2HTIytGbBXw1-8" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" parent="1" target="xr9rl4qH2HTIytGbBXw1-7" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="200" y="440" as="sourcePoint"/>
+                        <mxPoint x="440" y="430" as="targetPoint"/>
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="xr9rl4qH2HTIytGbBXw1-9" value="Post a new Image/videos" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="610" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://miro.medium.com/v2/resize:fit:1400/1*5rzj64C1uAWqHraAwOvhFA.png;" vertex="1" parent="1">
+                    <mxGeometry x="157" y="30" width="506" height="520" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
