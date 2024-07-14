@@ -1,0 +1,66 @@
+Social Media
+users
+create post
+like and comment
+
+
+sql
+
+users
+user_id: unique, PK
+username: unique
+email:
+created_at:
+updated_at:
+is_deleted: 
+
+
+user_metadata
+password:
+salt:
+dob:
+no_of_posts:
+no_of_followers: 
+
+
+Posts
+post_id: PK
+user_id: FK
+content_id: FK
+created_date:
+updated_at:
+no_of_likes:
+no_of_comments:
+no_of_shares:
+is_deleted:
+
+Content
+content_id:
+image/video: cdn url
+text:
+
+
+
+Likes
+like_id: PK
+post_id: 
+liked_by: user_id<FK>
+created_at:
+is_deleted: 
+
+Commnents
+comment_id: PK
+post_id: FK
+commented_by: FK
+created_at:
+updated_at:
+is_deleted:
+content: 
+ref_comment_id: comment_id
+
+
+Follows
+follower_id: PK
+followee_id: PK
+follower_user_name:
+created_at:
