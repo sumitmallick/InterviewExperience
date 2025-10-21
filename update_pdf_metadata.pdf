@@ -1,0 +1,10 @@
+import xattr
+import plistlib
+
+def set_where_from(filepath, url):
+    value = plistlib.dumps([url])
+    xattr.setxattr(filepath, 'com.apple.metadata:kMDItemWhereFroms', value)
+
+set_where_from("Sumit_Kumar_Mallick_JULY.pdf", "https://gmail.com")
+set_where_from("Sumit_Kumar_Mallick_AUG.pdf", "https://gmail.com")
+set_where_from("Sumit_Kumar_Mallick_SEP.pdf", "https://gmail.com")
