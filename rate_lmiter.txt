@@ -1,0 +1,214 @@
+You are a senior engineer for a large e-commerce platform that has a popular public-facing API. To protect your backend services from being overwhelmed by a high volume of requests, you need to design and implement a distributed rate limiter.
+Problem Statement: Design a distributed rate-limiting service that can be used by various microservices across the platform. The system should enforce a configured rate limit (e.g., X requests per minute for a specific user on a particular API endpoint).
+Design Deliverables Expected:
+High-Level Architecture: A diagram showing where the rate-limiting service fits into the request flow.
+Algorithm Choice: Discuss at least two common rate-limiting algorithms and justify your choice.
+Data Storage Design: Explain the data model and storage technology you would use.
+Concurrency Handling: Detail how you would prevent race conditions and ensure atomicity.
+API Design: Propose a simple API for interacting with the rate-limiting service.
+Edge Cases and Trade-offs: Discuss how you would handle clock skew, a cache failure, and the trade-offs of your chosen algorithm.
+
+
+API Gateway
+|
+|
+|
+Rate Limiter Middleware
+1. Extract: userId, API Endpoint, API Key
+2. Call Rate, Limiter Service
+3. Allow/Reject Based on the response
+|
+|
+|
+Distributed Rate Limiting Service
+
+Rate Limiter 1   Rate Limiter 2
+
+|
+|
+|
+
+Redis Cluster
+|
+|
+|
+PostgreSQL/MySQL
+
+
+Algorithm to Use:
+Sliding Window Counter:
+
+
+
+Formulae: requestsPerCurrentWindow +  (requestsPerPreviousWindow * overLapPercentage)
+
+Data Storage Design:
+
+Redis data Model:
+
+Key Pattern: "rate_limit: {identifier}: {window_start_timestamp}"
+
+Sample:
+rate_limit:user:12345:/endpoint/api/products:1234
+
+Value: Counter(Integer)
+TTL: 2 * window_size()
+
+Configuration Storage:
+Table->rate_limit_rules:
+id
+rule_name
+identifier_type
+endpoint_pattern
+limit_value:
+window_seconds
+tier:
+is_active:
+created_at
+updated_at
+
+constraint unique_rule UNIQUE(identifier_type, endpoint_pattern, tier)
+
+
+TIER
+id
+tier_name
+tier
+custom_limit
+created_at
+updated_at
+
+
+Rate Limit Violations Log
+table->rate_limit_violation
+
+
+window1: 12:00:00 - 12:00:59
+window2: 12:01:00 - 12:01:59
+
+12:00:55 - 12:00:59
+
+
+Timeline: Limit -> 10 req/60 secs
+Prev Window                   
+12:00:00 to 12:00:59
+7 reqs
+
+Current Window
+12:01:00 to 12:01:59
+
+3 Reqs
+
+Curr: 12:01:30 
+
+Estimated Count = Current Window Count + (Prev Window Count * Overlap %)
+Overlap % = (Window Size - Time Elapsed in current window) / Window Size
+
+Prev Window: 7 req
+Curr Wi: 3 req
+Curr Time: 12:01:30
+Limit: 10 req/minute
+Calculated Elapsed Time in curr window:
+Elapsed 30 secs
+
+(60-30)/60 =  50%
+
+Estimated Count =  3 + (7*0.5) = 6.5 < 10 
+
+
+
+
+
+
+
+from typing import Optional
+from dataclasses import dataclass
+
+
+@dataclass
+class RateLimitConfig:
+	limit: int
+	window_seconds: int
+	identifier_type: str
+	endpoint: Optional[str] = None
+
+@dataclass
+class RateLimitResult:
+	allowed: bool
+	limit: int
+	remaining: int
+	reset_after_seconds: int
+	retry_after_seconds: Optional[str] = None
+
+class RateLimitService:
+	def __init__(self, redis_client):
+self.redis = redis_client
+self._register_lua_scripts()
+
+def _register_lua_scripts(self):
+	self.check_rate_limit_script = self.redis.register_script("""
+		local current_key = KEYS[1]
+		local previous_key = KEYS[2]
+		local limit = tonumber(ARGV[1])
+		local window_seconds = tonumber(ARGV[2])
+		local current_timestamp = tonumber(ARGV[3])
+		local window_start = tonumber(ARGV[4])
+		local prev_window_start = tonumber(ARGV[5])
+
+		local current_count = tonumber(redis.call('GET', current_key) or '0')
+		local previous_count = tonumber(redis.call('GET', previous_key) or '0')
+		local elapsed_in_current = current_timestamp - window_start
+		local overlap_percentage = (window_seconds - elapsed_in_current) / window_seconds
+		local estimated_count = current_count + (previous_count * overlap_percentage)
+if estimated_count >= limit then
+	return {0, current_count, window_seconds - elapsed_in_current}
+end
+
+redis.call('INCR', current_key)
+current_key = current_count + 1
+redis.call('EXPIRE', current_key, window_seconds*2)
+local remaining = limit - math.ceil(estimated_count)
+local reset_after = window_seconds - elapsed_in_current
+return {1, current_count, remaining, reset_after}
+
+""")
+
+def _generate_key(self, identifier, config: RateLimitConfig, window_start):
+	pass
+
+
+def check_rate_limit(self, identifier, config: RateLimitConfig):
+	try:
+		current_timestamp = time.time()
+		window_start = self._generate(current_timestamp, config.window_seconds)
+		prev_window_start = window_start - config.window_seconds
+
+		current_key = self._generate_key(identifier, config, window_start)
+		prev_key = self._generate_key(identifier, config, prev_window_start)
+
+		result = self.check_rate_limit_script(
+			keys = [current_key, prev_key]
+			args = [
+				config.limit,
+				config.window_seconds,
+				current_timestamp,
+				window_start,
+				prev_window_start
+]
+)
+
+allowed = bool(result[0])
+current_count = int(result[1])
+remaining = int(result[2]) if allowed else 0
+reset_after = int(result[3])
+
+return RateLimitResult(
+	allowed = allowed,
+current_count = current_count,
+remaining = remaining,
+reset_after_seconds = reset_after,
+retry_after_seconds = reset_after if not allowed else None
+)
+	
+except redis.RedisError:
+	
