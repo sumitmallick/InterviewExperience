@@ -1,122 +1,38 @@
-````markdown
 # 🧩 Ratings & Review System – Product Delisting Architecture
 
-This document explains the **architecture design** for handling **product delisting** in an e-commerce **Ratings & Reviews system**, ensuring consistency, scalability, and data cleanup across microservices, cache, and analytics.
+This document describes the **high-level system architecture** for handling **product delisting** in an e-commerce **Ratings & Reviews** platform.  
+It ensures **data consistency**, **cache cleanup**, and **asynchronous event-driven processing** across multiple services.
 
 ---
 
 ## 🧠 Problem Statement
 
-In an e-commerce platform:
+When a product is **delisted** from an e-commerce platform:
 
-- Each product can have multiple **reviews and ratings** submitted by verified users after order delivery.
-- Over time, products can get **delisted** due to end-of-life, compliance, or supplier issues.
-- Once delisted:
-  - The product should no longer appear in listings.
-  - Its reviews and ratings should be **hidden or deleted**.
-  - All cached data and aggregates (in Redis, DB, search index, etc.) should be cleaned up.
-  - Historical data may need to be archived for **auditing or analytics**.
+- The product should no longer appear in listings.
+- All **ratings and reviews** must be hidden or deleted.
+- **Cache**, **DB**, **search index**, and **analytics data** must stay consistent.
+- Historical data may still be archived for **audit or reporting**.
 
-The challenge is to:
-- Maintain **data integrity** across services.
-- Handle **asynchronous cleanup** efficiently.
-- Keep the system **scalable**, **event-driven**, and **resilient** to partial failures.
+We need a **scalable**, **fault-tolerant**, and **event-driven** mechanism to handle this without service downtime.
 
 ---
 
-## 🧩 Solution Overview
+## 🏗️ Solution Overview
 
-The design uses an **event-driven microservices architecture** powered by **Kafka/SNS** and distributed caching (Redis).
+### Goals
 
-### 🏗️ Key Goals
-
-| Goal | Approach |
-|------|-----------|
-| ✅ Data consistency | Soft delete + event-driven hard cleanup |
-| ⚡ Fast updates | Asynchronous events via Kafka |
-| 🧠 Scalable reads | Cached aggregates in Redis |
-| 💾 Safe archival | Cold storage (S3 / Glacier) |
-| 🔁 Resilience | Idempotent cleanup + retries via DLQs |
+| Objective | Solution |
+|------------|-----------|
+| Maintain consistency | Event-driven microservice cleanup |
+| Fast response | Asynchronous deletion workflow |
+| Scalability | Distributed cache and database per domain |
+| Resilience | Idempotent and replay-safe events |
+| Auditability | Soft-delete first, archive later |
 
 ---
 
-## 🧮 High-Level Architecture (Mermaid.js)
-
-```mermaid
-flowchart TD
-    %% Main Components
-    subgraph ProductDomain["Product Domain"]
-        PS[Product Service]
-    end
-    
-    subgraph Messaging["Event Bus"]
-        EB[(Kafka / SNS / PubSub)]
-    end
-    
-    subgraph ReviewDomain["Review Domain"]
-        RS[Review Service]
-        RD[(ReviewDB)]
-        RC[(Redis Cache)]
-        RW[Review Cleanup Worker]
-    end
-    
-    subgraph RatingDomain["Rating Domain"]
-        RA[Rating Aggregator]
-        RG[(RatingDB)]
-    end
-    
-    subgraph SearchDomain["Search & Indexing"]
-        SI[Search Index - Elasticsearch]
-    end
-    
-    subgraph AnalyticsDomain["Analytics & Archival"]
-        ADW[(Data Lake / Analytics DB)]
-        ARW[Archive Worker - S3 / Glacier]
-    end
-    
-    subgraph Client["Frontend / User Side"]
-        UI[Product Page / Admin Console]
-    end
-    
-    %% Normal Review Flow
-    RS -->|Write Reviews| RD
-    RS -->|Cache Ratings & Top Reviews| RC
-    RS -->|Emit ReviewCreated| EB
-    EB --> RA
-    RA --> RG
-    RA --> RC
-    
-    %% Product Delist Flow
-    PS -->|ProductDelisted Event| EB
-    EB -->|ProductDelisted| RS
-    EB -->|ProductDelisted| RA
-    EB -->|ProductDelisted| SI
-    EB -->|ProductDelisted| ADW
-    
-    %% Review Service Handles Delist
-    RS -->|Mark reviews as DELETED| RD
-    RS -->|Delete keys - ratings, reviews| RC
-    RS -->|Emit ReviewsPurged Event| EB
-    RS --> RW
-    
-    %% Rating Aggregator Cleanup
-    RA -->|Remove product ratings| RG
-    RA -->|Delete rating cache| RC
-    
-    %% Search Cleanup
-    SI -->|Delete indexed reviews| SI
-    
-    %% Analytics Cleanup & Archive
-    ADW -->|Update aggregates| ADW
-    ADW --> ARW
-    
-    %% Archive Worker
-    ARW -->|Upload deleted reviews to cold storage| ARW
-    
-    %% Users & UI
-    UI -->|View reviews - active products only| RS
-    UI -->|Trigger manual delist| PS
-````
+## 🧮 High-Level Architecture
 
 🔗 **Live Editor:** [View Diagram in Mermaid Live Editor](https://mermaid.live/edit#pako:eNqFVm1v2jAQ_iuWpU2tBB2F8vphEgTaobUVIjCkwT64sRsskhjZDm1X-t93iZ1A0q7wocK-u-ce391z5RV7gjLcw4-BePLWRGo0G64iBJ8vX9Ad4RFyRLgVEYu0MvcqfvAl2a7RRAoae3ooQnBbrrA9I3Oxwn-Mf_KZuMvM6jK54x6zRhZR86WEfceUIj6PfMAd7SA5GsSqADkaLM9-kscNQd-Qe-_C30n84MYP5yeQp2zH2VNO2hw_4jx1l9ZYpJzahsszCzQ4P753knvKFXKIt2YF0yKDcwJGoniLFkJumDxFl2iowoFuevyQbn9pjX3fl8wnWshj8w0wM1iDUyVyGZHeOs9pjugrGkeUPQNCIa87XlqH1IyqaBQQpbmn0tsTqfoRCV4S5zxbfgMJ-wDAdyQoJOwPF8uzIdEE3ZINg74fIorN6EPJDQKztQZybgMibgLi8ZOldwIOgweUrqWINHhB5FwBisspK1Caj_PxnhA_5UTDVDqREsF_Zh30dS9kSAI7kugaJGhMUxdVq9_3C8k1s1a1h6ErWNMJs_ORFGsmtke-TsF3FHJtjY5kRDO6BwEZl9EgcYH5sRF9c7wpHp0S9VzsLOBKH3GfmIzZckjNjKJUxOWkZS_g7Z6w9z-3u-PP7TA8pYcUNY5-kIgGTNl3FYp4R-QGSVNhRMBldDuajYbvGgOhDPq2YS8KBk6aBlWyyM96oyax9N8XyzjCBilTL-s9Wy3HrdtPWShAAVvbMMtnX-pwxtqYkZcM1_59263UC3nc8TEAT7YAvCF_btaSHOOg12wTZkpnxgealCLOtxRGFRH7PqaO-md9EpGX4QuSt97TDDEQhCKaUs05Ii2QJwKKFNQQ9Lv_ADURfqKyuX3N3Dz6VzI7GUwVEU_zQ60VElHwchhqGzOT3PdhjYTwdlA_TSdtD8LBFexLTnFPy5hVcMhgOyRH_JrEr7BesxAWTw--UpjFFV5FbxCzJdFvIcIsTIrYX-PeIwkUnOK0hkNOYKeF-a2EXcSkI-JI495lvZuC4N4rfsa9evui2a11ms3LVr3dbtY7VxX8Atf1xkWjftW9ana79fZlq9l5q-C_ad7aRbdVb9ZqtUazDTGdFuDBP0Eo5p35cZH-xnj7B_q7mMw)
 
